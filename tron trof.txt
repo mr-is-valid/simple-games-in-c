@@ -1,0 +1,295 @@
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+
+#define ROW 20
+#define COL 10
+#define ROW_EXCEPTION ROW+2
+#define COL_EXCEPRION COL+2
+#define MAX_TRONS_IN_SQURE 10
+
+int Direction [4][2]={ {-1,0},{0,-1} , {1,0}, {0,1} };
+
+void Fill_The_Array(int Game[ROW_EXCEPTION][COL_EXCEPRION])
+{
+	int Row_Index=0;
+	int Col_Index=0;
+
+	for(Row_Index=1;Row_Index<ROW_EXCEPTION-1;Row_Index++)
+	{
+		for(Col_Index=1;Col_Index<COL_EXCEPRION-1;Col_Index++)
+		{
+			Game[Row_Index][Col_Index]=0;
+		}
+	}
+}
+
+
+void Print_Array(int Game[ROW_EXCEPTION][COL_EXCEPRION])
+{
+	int Row_Index=0;
+	int Col_Index=0;
+
+	for(Row_Index=0;Row_Index<ROW_EXCEPTION;Row_Index++)
+	{
+		for(Col_Index=0;Col_Index<COL_EXCEPRION;Col_Index++)
+		{
+			printf("%5d",Game[Row_Index][Col_Index]);
+		}
+		printf("\n");
+	}
+}
+
+
+void Fille_The_Trons(int *Game[ROW_EXCEPTION][COL_EXCEPRION])
+{
+	int Tx,Ty,Number_Of_TRONS,Number_Of_TRONS_For_Location;
+	int i=0;
+	printf("\nEnter the Number of Trons in the plant: ");
+	scanf("%d",&Number_Of_TRONS);
+	system("cls");
+	for(i=0;i<Number_Of_TRONS;i++)
+	{
+		printf("enter the location of the Tron %d : \n",i+1);
+		printf("row : ");
+		scanf("%d",&Ty);
+		printf("\ncol : ");
+		scanf("%d",&Tx);
+		printf("\nenter the number of trons this location : ");
+		scanf("%d",&Number_Of_TRONS_For_Location);
+		if(Game[Tx][Ty]==0)
+			{
+				Game[Tx][Ty]=Number_Of_TRONS_For_Location;
+			}
+	}
+}
+
+
+int Move(int Game[ROW_EXCEPTION][COL_EXCEPRION],int *row,int *col,int Steps , int Dx)
+{
+	 int nRow = Direction[Dx-1][0];
+	 int nCol = Direction[Dx-1][1];
+	 int index=0;
+	 Game[(*row)][(*col)]=0;
+
+	 for(index=0;index<Steps;index++)
+	 {
+		 if(Game[(*row)][(*col)] == -1)
+		 {
+			(*row)=(*row)-nRow;
+			(*col)=(*col)-nCol;
+			 Game[(*row)][(*col)]=99;
+
+			 return 1;
+		 }
+		 else
+		 {
+			Game[(*row)][(*col)]=0;
+			(*row)=(*row)+nRow;
+			(*col)=(*col)+nCol;
+
+			if(Game[(*row)][(*col)] == -1)
+			 {
+				(*row)=(*row)-nRow;
+				(*col)=(*col)-nCol;
+				Game[(*row)][(*col)]=99;
+
+				return 1;
+			}
+
+			 if(Game[(*row)][(*col)]<3) Game[(*row)][(*col)]=99;
+			 else 
+				 if(Game[(*row)][(*col)]>2) 
+					 return 2;
+		 }
+	 }
+	 return 3;
+}
+
+int Check_Trons (int Game[ROW_EXCEPTION][COL_EXCEPRION])
+{
+	for(int i=1;i<ROW_EXCEPTION;i++)
+	{
+		for(int j=1;j<COL_EXCEPRION;j++)
+		{
+			if(Game[i][j]!=99 && Game[i][j]!=0 && Game[i][j]!=-1)
+			return 0;
+		}
+	}
+return 1;
+}
+
+
+
+
+
+
+
+
+void main()
+{
+	int nStop_The_Black_Screen;
+	int Game[ROW_EXCEPTION][COL_EXCEPRION];
+	int Jx,Jy,Sx,Dx;
+	int Row_Index=0;
+	int Col_Index=0;
+	int nCheck_State=0;
+	int Trof_Location[2];
+	//creat the safe wall
+
+	for(Row_Index;Row_Index < ROW_EXCEPTION ;Row_Index++)
+	{
+		Game[Row_Index][0]=-1;
+		Game[Row_Index][COL_EXCEPRION-1]=-1;
+	}
+
+	for(Col_Index;Col_Index < COL_EXCEPRION ;Col_Index++)
+	{
+		Game[0][Col_Index]=-1;
+		Game[ROW_EXCEPTION-1][Col_Index-1]=-1;
+	}
+
+	Fill_The_Array(Game);
+
+	printf("enter the location of the Trof : \n");
+	printf("row : ");
+	scanf("%d",&Jy);
+	printf("\ncol : ");
+	scanf("%d",&Jx);
+	system("cls");
+	Game[Jx][Jy]=99;
+
+	Trof_Location[0]=Jx;
+	Trof_Location[1]=Jy;
+	
+	Fille_The_Trons(&Game);
+	//Print_Array(Game);
+
+	printf("Select The Dirction location that you want to go : \n");
+	printf("1. Move Up \n");
+	printf("2. Move Left \n");
+	printf("3. Move Down \n");
+	printf("4. Move Right \n");
+	printf("Direction = ");
+	scanf("%d",&Dx);
+	printf("\nthe number of steps you Want to go : \n");
+	printf("steps = ");
+	scanf("%d",&Sx);
+	system("cls");
+
+	while(Dx!=0 && Sx!=0 && nCheck_State!=2)
+	{
+		switch(Dx)
+		{
+		case 1: nCheck_State = Move(Game,&Trof_Location[0],&Trof_Location[1],Sx,Dx);
+
+				if(nCheck_State == 1 )printf("the Trof want to go out from the plant \n");
+				else 
+					if(nCheck_State == 2)
+						{
+							printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+							printf("the Trof is dead the plant is safe now \n");
+						}
+					else 
+						if (nCheck_State == 3)
+							{
+								printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+								printf("the Trof is moving...\n");
+							}
+
+				//Print_Array(Game);
+			break;
+
+		case 2: nCheck_State = Move(Game,&Trof_Location[0],&Trof_Location[1],Sx,Dx);
+
+				if(nCheck_State == 1 )printf("the Trof want to go out from the plant \n");
+				else 
+					if(nCheck_State == 2)
+						{
+							printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+							printf("the Trof is dead the plant is safe now \n");
+						}
+					else 
+						if (nCheck_State == 3)
+							{
+								printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+								printf("the Trof is moving...\n");
+							}
+
+				//Print_Array(Game);
+			break;
+
+		case 3: nCheck_State = Move(Game,&Trof_Location[0],&Trof_Location[1],Sx,Dx);
+
+				if(nCheck_State == 1 )printf("the Trof want to go out from the plant \n");
+				else 
+					if(nCheck_State == 2)
+						{
+							printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+							printf("the Trof is dead the plant is safe now \n");
+						}
+					else 
+						if (nCheck_State == 3)
+							{
+								printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+								printf("the Trof is moving...\n");
+							}
+
+				//Print_Array(Game);
+			break;
+
+		case 4: nCheck_State = Move(Game,&Trof_Location[0],&Trof_Location[1],Sx,Dx);
+
+				if(nCheck_State == 1 )printf("the Trof want to go out from the plant \n");
+				else 
+					if(nCheck_State == 2)
+						{
+							printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+							printf("the Trof is dead the plant is safe now \n");
+						}
+					else 
+						if (nCheck_State == 3)
+							{
+								printf("SOME battels was in this location ( %d , %d )\n",Trof_Location[0],Trof_Location[1]);
+								printf("the Trof is moving...\n");
+							}
+
+				//Print_Array(Game);
+			break;
+
+		default :
+			break;
+		}
+
+
+		if(nCheck_State == 2)
+		{
+			Sx=0;
+			Dx=0;
+		}
+		else if(Check_Trons(Game) == 1)
+			{
+			Sx=0;
+			Dx=0;
+			printf("no more trons in the plants \n");
+			}
+		else 
+		{
+			printf("Select The Dirction location that you want to go : \n");
+			printf("0. dont move \n");
+			printf("1. Move Up \n");
+			printf("2. Move Left \n");
+			printf("3. Move Down \n");
+			printf("4. Move Right \n");
+			printf("Direction = ");
+			scanf("%d",&Dx);
+			printf("\nthe number of steps you Want to go : (0 steps = dont move)\n");
+			printf("steps = ");
+			scanf("%d",&Sx);
+			system("cls");
+			if(Dx == 0 && Sx == 0)printf("\n THE TROF IS TIERD \n");
+		}
+	}
+
+	 scanf("%d",&nStop_The_Black_Screen);
+}

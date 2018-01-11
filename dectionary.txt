@@ -1,0 +1,197 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include <string.h>
+#include <time.h>
+
+#define MAX_WORD_LENTGHE 20
+#define MAX_DEFENITION_LENTGHE 200
+
+typedef char word[MAX_WORD_LENTGHE];
+typedef char defenition[MAX_DEFENITION_LENTGHE];
+
+void AddNewWord(char* iszNewWord, char* iszWordDef);
+char* GetWordDefenition(char* iszWord);
+void JoinStrings(char** iopszFirstString,char* iszSecondString);
+void PrintWordsOf(char icStartChar);
+
+FILE *fp_wirting;
+FILE *fp_reading;
+
+
+void AddNewWord(char* iszNewWord, char* iszWordDef)
+{
+	printf("enter the word that you want to enter : \n");
+	printf("your word : ");
+	scanf("%s",iszNewWord);
+
+	printf("\nenter the word defenition : \n");
+	printf("your word : ");
+	scanf("%s",iszWordDef);
+
+	JoinStrings(&iszNewWord,iszWordDef);
+}
+
+
+
+
+
+char* GetWordDefenition(char* iszWord)
+{
+	int find=1,flag=1,index=0;
+	word temp;
+	char buffer[MAX_WORD_LENTGHE+MAX_DEFENITION_LENTGHE];
+
+	fp_reading = fopen("dictionary.dat", "r");
+
+	//i assume that the input is ligal
+	while (fgets(buffer, sizeof(buffer), fp_reading) && flag) 
+	{ 
+		index=0,find=1;
+		while(buffer[index]!=' ' && find)
+		{
+			if(iszWord[index]!=buffer[index]) find=0;
+			else
+			{
+				temp[index]=buffer[index];
+				index++;
+			}
+		}
+
+ 		if(find==1)
+		{
+			temp[index]='\0';
+			buffer[index]='-';
+			if(strcmp(iszWord,temp)==0)
+				{
+					flag=0;
+					fclose(fp_reading);
+					return buffer;
+				}
+			else flag=1;
+		}
+	}
+
+	fclose(fp_reading);
+	return NULL;
+}
+
+
+
+
+
+void JoinStrings(char** iopszFirstString,char* iszSecondString)
+{
+	fp_wirting = fopen("dictionary.dat", "a");
+	
+	fseek(fp_wirting, 0, SEEK_END);
+	long fsize = ftell(fp_wirting);
+	fseek(fp_wirting, fsize, SEEK_SET);
+	
+	fprintf(fp_wirting,"%s",strcat(strcat((*iopszFirstString)," "),iszSecondString));
+	fputs("\n",fp_wirting);
+
+	fclose(fp_wirting);
+}
+
+
+
+
+
+void PrintWordsOf(char icStartChar)
+{
+	int find=1,index=0;
+	word temp;
+	char buffer[MAX_WORD_LENTGHE+MAX_DEFENITION_LENTGHE];
+
+	fp_reading = fopen("dictionary.dat", "r");
+
+	//i assume that the input is ligal
+	while (fgets(buffer, sizeof(buffer), fp_reading)) 
+	{ 
+		index=0,find=1;
+		while(buffer[index]!=' ' && find)
+		{
+			if(buffer[0]!=icStartChar) find=0;
+			else
+			{
+				temp[index]=buffer[index];
+				index++;
+			}
+		}
+
+		if(find==1)
+		{
+			temp[index]='\0';
+			puts(temp);
+			printf("\n");
+		}
+
+	}
+
+	fclose(fp_reading);
+}
+
+
+
+
+
+void main()
+{
+	int stop;
+	int choose;
+
+	word iszNewWord,iszWord;
+	defenition iszWordDef;
+	char icStartChar;
+
+	printf("1. To add a new word and it definition.\n");
+	printf("2. To search a word + defenition in the dictionary.\n");
+	printf("3. To search only a word that begin in specipic char.\n");
+	printf("4. To exit.\n");
+	printf("you choose : ");
+	scanf("%d",&choose);
+	system("cls");
+
+	while(choose != 4)
+	{
+		switch(choose)
+		{
+		case 1 :
+				AddNewWord(iszNewWord,iszWordDef);
+			break;
+
+		case 2 :
+				printf("enter the word that you want to serach : \n");
+				scanf("%s",iszWord);
+				printf("%s",GetWordDefenition(iszWord));
+				printf("\n");
+			break;
+
+		case 3 :
+				printf("enter the char that you want to serach the word begin (in big latter): \n");
+				flushall();
+				scanf("%c",&icStartChar);
+				flushall();
+				PrintWordsOf(icStartChar);
+				printf("\n");
+			break;
+
+		default : printf("you must enter a number between 1-4. \n");
+			break;
+		}
+
+		printf("1. To search a word in the dictionary.\n");
+		printf("2. To add a new word and it definition.\n");
+		printf("3. To search a word that begin in specipic char.\n");
+		printf("4. To exit.\n");
+		printf("you choose : ");
+		scanf("%d",&choose);
+		system("cls");
+
+	}
+
+	printf("thank you for visit the dictionary :) \n");
+
+	scanf("%d",&stop);
+}
